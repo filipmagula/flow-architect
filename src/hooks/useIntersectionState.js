@@ -79,20 +79,19 @@ export const useIntersectionState = (initialType = '4-way') => {
     const addLane = useCallback((armId, type) => {
         setArms(prev => prev.map(arm => {
             if (arm.id !== armId) return arm;
-            const listKey = type === 'ingress' ? 'ingressLanes' : 'egressLanes';
-            const newLane = type === 'ingress'
-                ? { id: `i${armId}-${Date.now()}`, volume: 0, movements: ['S'] }
-                : { id: `e${armId}-${Date.now()}`, volume: 0 };
-            return { ...arm, [listKey]: [...arm[listKey], newLane] };
+            if (type === 'egress') return arm; // App does not support multiple egresses
+            if (arm.ingressLanes.length >= 5) return arm; // Max 5 ingress lanes
+
+            const newLane = { id: `i${armId}-${Date.now()}`, volume: 0, movements: ['S'] };
+            return { ...arm, ingressLanes: [...arm.ingressLanes, newLane] };
         }));
     }, []);
 
     const removeLane = useCallback((armId, type, laneId) => {
         setArms(prev => prev.map(arm => {
             if (arm.id !== armId) return arm;
-            const listKey = type === 'ingress' ? 'ingressLanes' : 'egressLanes';
-            if (arm[listKey].length <= 1) return arm;
-            return { ...arm, [listKey]: arm[listKey].filter(l => l.id !== laneId) };
+            if (type === 'egress') return arm; // Exactly one egress per direction
+            return { ...arm, ingressLanes: arm.ingressLanes.filter(l => l.id !== laneId) };
         }));
     }, []);
 
