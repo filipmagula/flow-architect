@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
     Settings,
     Map as MapIcon,
@@ -20,7 +20,10 @@ import {
     Eye,
     Palette,
     Download,
-    Upload
+    Upload,
+    Maximize,
+    ZoomIn,
+    ZoomOut
 } from 'lucide-react';
 
 const BRANCH_COLORS = {
@@ -37,6 +40,126 @@ const App = () => {
     const [showDebugSidebar, setShowDebugSidebar] = useState(false);
     const [globalRotation, setGlobalRotation] = useState(0);
     const [editingArmId, setEditingArmId] = useState(null);
+    const [arms, setArms] = useState([
+        {
+            id: 1,
+            baseAngle: 0,
+            angle: 0,
+            label: 'North',
+            ingressLanes: [
+                { id: 'i1-1', volume: 150, movements: ['S', 'R'] },
+                { id: 'i1-2', volume: 120, movements: ['L'] }
+            ],
+            egressLanes: [{ id: 'e1-1', volume: 270 }]
+        },
+        {
+            id: 2,
+            baseAngle: 90,
+            angle: 0,
+            label: 'East',
+            ingressLanes: [{ id: 'i2-1', volume: 300, movements: ['S'] }],
+            egressLanes: [{ id: 'e2-1', volume: 300 }]
+        },
+        {
+            id: 3,
+            baseAngle: 180,
+            angle: 0,
+            label: 'South',
+            ingressLanes: [
+                { id: 'i3-1', volume: 100, movements: ['S'] },
+                { id: 'i3-2', volume: 200, movements: ['R'] }
+            ],
+            egressLanes: [{ id: 'e3-1', volume: 300 }]
+        },
+        {
+            id: 4,
+            baseAngle: 270,
+            angle: 0,
+            label: 'West',
+            ingressLanes: [{ id: 'i4-1', volume: 150, movements: ['L', 'S', 'R'] }],
+            egressLanes: [{ id: 'e4-1', volume: 150 }]
+        },
+    ]);
+    const [labelHorizontalOffset, setLabelHorizontalOffset] = useState(111);
+
+    const laneHeight = 48;
+    const laneGap = 3;
+    const medianHeight = 12;
+    const medianPadding = 8;
+
+    const hubSize = useMemo(() => {
+        const maxLanesPerArm = Math.max(...arms.map(a => a.ingressLanes.length + a.egressLanes.length));
+        const maxRoadWidth = maxLanesPerArm * (laneHeight + laneGap) + (medianHeight + medianPadding * 2);
+        return Math.max(500, maxRoadWidth + 180);
+    }, [arms]);
+
+    const [zoom, setZoom] = useState(1);
+    const mainCanvasRef = useRef(null);
+
+    const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.1, 3));
+    const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.1));
+
+    const handleAutoFit = useCallback(() => {
+        if (!mainCanvasRef.current) return;
+        
+        const canvasWidth = mainCanvasRef.current.clientWidth;
+        const canvasHeight = mainCanvasRef.current.clientHeight;
+        
+        // Calculate the bounding box of the scene in viewport coordinates
+        let minX = -hubSize / 2;
+        let maxX = hubSize / 2;
+        let minY = -hubSize / 2;
+        let maxY = hubSize / 2;
+
+        const buffer = 150; // Buffer for labels and arrows
+        const labelDist = (hubSize / 2) + labelHorizontalOffset + buffer;
+
+        arms.forEach(arm => {
+            const totalAngle = (arm.baseAngle + arm.angle + globalRotation) % 360;
+            const rad = (totalAngle * Math.PI) / 180;
+            
+            const x = labelDist * Math.sin(rad);
+            const y = -labelDist * Math.cos(rad);
+            
+            minX = Math.min(minX, x);
+            maxX = Math.max(maxX, x);
+            minY = Math.min(minY, y);
+            maxY = Math.max(maxY, y);
+        });
+
+        const contentWidth = maxX - minX;
+        const contentHeight = maxY - minY;
+        
+        const scaleX = (canvasWidth - 80) / contentWidth;
+        const scaleY = (canvasHeight - 80) / contentHeight;
+        const newZoom = Math.min(scaleX, scaleY, 1.5);
+        
+        setZoom(newZoom);
+    }, [hubSize, labelHorizontalOffset, arms, globalRotation, showSidebar, showDebugSidebar]);
+
+    useEffect(() => {
+        handleAutoFit();
+    }, []); // Only on initial load
+
+    useEffect(() => {
+        const handleWheel = (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.05 : 0.05;
+                setZoom(prev => Math.max(0.1, Math.min(3, prev + delta)));
+            }
+        };
+
+        const canvas = mainCanvasRef.current;
+        if (canvas) {
+            canvas.addEventListener('wheel', handleWheel, { passive: false });
+        }
+        return () => {
+            if (canvas) {
+                canvas.removeEventListener('wheel', handleWheel);
+            }
+        };
+    }, []);
 
     // Import/Export Logic
     const handleExport = () => {
@@ -90,48 +213,7 @@ const App = () => {
     const [hubOverlap, setHubOverlap] = useState(100);
     const [hubWidthOffset, setHubWidthOffset] = useState(35);
     const [canvasBg, setCanvasBg] = useState('bg-[#1e293b]');
-    const [labelHorizontalOffset, setLabelHorizontalOffset] = useState(111);
 
-    const [arms, setArms] = useState([
-        {
-            id: 1,
-            baseAngle: 0,
-            angle: 0,
-            label: 'North',
-            ingressLanes: [
-                { id: 'i1-1', volume: 150, movements: ['S', 'R'] },
-                { id: 'i1-2', volume: 120, movements: ['L'] }
-            ],
-            egressLanes: [{ id: 'e1-1', volume: 270 }]
-        },
-        {
-            id: 2,
-            baseAngle: 90,
-            angle: 0,
-            label: 'East',
-            ingressLanes: [{ id: 'i2-1', volume: 300, movements: ['S'] }],
-            egressLanes: [{ id: 'e2-1', volume: 300 }]
-        },
-        {
-            id: 3,
-            baseAngle: 180,
-            angle: 0,
-            label: 'South',
-            ingressLanes: [
-                { id: 'i3-1', volume: 100, movements: ['S'] },
-                { id: 'i3-2', volume: 200, movements: ['R'] }
-            ],
-            egressLanes: [{ id: 'e3-1', volume: 300 }]
-        },
-        {
-            id: 4,
-            baseAngle: 270,
-            angle: 0,
-            label: 'West',
-            ingressLanes: [{ id: 'i4-1', volume: 150, movements: ['L', 'S', 'R'] }],
-            egressLanes: [{ id: 'e4-1', volume: 150 }]
-        },
-    ]);
 
     useEffect(() => {
         if (type === '3-way') {
@@ -201,16 +283,6 @@ const App = () => {
         return 'text-rose-400';
     };
 
-    const laneHeight = 48;
-    const laneGap = 3;
-    const medianHeight = 12;
-    const medianPadding = 8;
-
-    const hubSize = useMemo(() => {
-        const maxLanesPerArm = Math.max(...arms.map(a => a.ingressLanes.length + a.egressLanes.length));
-        const maxRoadWidth = maxLanesPerArm * (laneHeight + laneGap) + (medianHeight + medianPadding * 2);
-        return Math.max(500, maxRoadWidth + 180);
-    }, [arms]);
 
     const getReadableFlip = (armTotalAngle) => {
         let angle = (globalRotation + armTotalAngle) % 360;
@@ -608,9 +680,41 @@ const App = () => {
                 </aside>
 
                 {/* MAIN CANVAS */}
-                <main className="flex-1 relative overflow-hidden flex flex-col transition-colors duration-500">
-                    <div className="flex-1 relative flex items-center justify-center">
-                        {/* Grid Overlay */}
+                <main ref={mainCanvasRef} className="flex-1 relative overflow-hidden flex flex-col transition-colors duration-500">
+                    <div className="flex-1 relative flex items-center justify-center overflow-hidden">
+                        {/* Zoom Control Panel */}
+                        <div className="absolute top-6 right-6 z-20 flex flex-col gap-2">
+                            <button
+                                onClick={handleZoomIn}
+                                className="p-3 bg-neutral-900/80 backdrop-blur-md border border-white/10 rounded-xl text-neutral-400 hover:text-white hover:bg-neutral-800 transition-all shadow-xl"
+                                title="Zoom In"
+                            >
+                                <ZoomIn size={20} />
+                            </button>
+                            <button
+                                onClick={handleZoomOut}
+                                className="p-3 bg-neutral-900/80 backdrop-blur-md border border-white/10 rounded-xl text-neutral-400 hover:text-white hover:bg-neutral-800 transition-all shadow-xl"
+                                title="Zoom Out"
+                            >
+                                <ZoomOut size={20} />
+                            </button>
+                            <button
+                                onClick={handleAutoFit}
+                                className="p-3 bg-neutral-900/80 backdrop-blur-md border border-white/10 rounded-xl text-blue-400 hover:text-blue-300 hover:bg-neutral-800 transition-all shadow-xl mt-2"
+                                title="Fit to View"
+                            >
+                                <Maximize size={20} />
+                            </button>
+                            <div className="bg-neutral-900/80 backdrop-blur-md border border-white/10 rounded-lg px-2 py-1 text-[10px] font-mono text-neutral-500 text-center shadow-lg">
+                                {Math.round(zoom * 100)}%
+                            </div>
+                        </div>
+
+                        <div 
+                            className="relative flex items-center justify-center transition-transform duration-300 ease-out"
+                            style={{ transform: `scale(${zoom})` }}
+                        >
+                            {/* Grid Overlay */}
                         {showMap && (
                             <div className="absolute inset-0 opacity-[0.04] pointer-events-none">
                                 <div className="absolute inset-0" style={{
@@ -820,6 +924,7 @@ const App = () => {
                             })}
                         </div>
                     </div>
+                </div>
 
                     {/* FLOATING LEGEND */}
                     {showLegend && (
