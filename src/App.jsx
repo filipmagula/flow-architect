@@ -165,10 +165,19 @@ const App = () => {
     const handleExport = () => {
         const config = {
             arms,
+            type,
+            globalRotation,
             hubMode,
             ribbonOverlap,
             hubOverlap,
             hubWidthOffset,
+            showLegend,
+            legendPosition,
+            showMap,
+            canvasBg,
+            showInternalRibbons,
+            useFixedRibbonWidth,
+            labelHorizontalOffset,
             timestamp: new Date().toISOString()
         };
         const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
@@ -191,10 +200,19 @@ const App = () => {
             try {
                 const config = JSON.parse(e.target.result);
                 if (config.arms) setArms(config.arms);
+                if (config.type !== undefined) setType(config.type);
+                if (config.globalRotation !== undefined) setGlobalRotation(config.globalRotation);
                 if (config.hubMode !== undefined) setHubMode(config.hubMode);
                 if (config.ribbonOverlap !== undefined) setRibbonOverlap(config.ribbonOverlap);
                 if (config.hubOverlap !== undefined) setHubOverlap(config.hubOverlap);
                 if (config.hubWidthOffset !== undefined) setHubWidthOffset(config.hubWidthOffset);
+                if (config.showLegend !== undefined) setShowLegend(config.showLegend);
+                if (config.legendPosition !== undefined) setLegendPosition(config.legendPosition);
+                if (config.showMap !== undefined) setShowMap(config.showMap);
+                if (config.canvasBg !== undefined) setCanvasBg(config.canvasBg);
+                if (config.showInternalRibbons !== undefined) setShowInternalRibbons(config.showInternalRibbons);
+                if (config.useFixedRibbonWidth !== undefined) setUseFixedRibbonWidth(config.useFixedRibbonWidth);
+                if (config.labelHorizontalOffset !== undefined) setLabelHorizontalOffset(config.labelHorizontalOffset);
             } catch (err) {
                 console.error("Failed to import configuration:", err);
                 alert("Invalid configuration file.");
