@@ -42,6 +42,7 @@ const App = () => {
     const [flowPanelPosition, setFlowPanelPosition] = useState('bottom-right');
     const [globalRotation, setGlobalRotation] = useState(0);
     const [editingArmId, setEditingArmId] = useState(null);
+    const [editingLaneId, setEditingLaneId] = useState(null);
     const [arms, setArms] = useState([
         {
             id: 1,
@@ -519,10 +520,10 @@ const App = () => {
                     >
                         {showSidebar ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
                     </button>
-                    <div className="bg-blue-600 p-1 rounded-lg shadow-[0_0_15px_rgba(37,99,235,0.4)]">
-                        <Activity size={16} className="text-white" />
+                    <div className="flex items-center">
+                        <Activity size={20} className="text-emerald-500" />
                     </div>
-                    <h1 className="text-lg font-bold tracking-tight italic">FlowArchitect <span className="text-neutral-500 font-medium text-xs">v3.5.1</span></h1>
+                    <h1 className="text-lg font-bold tracking-tight">Flow Architect</h1>
                 </div>
 
                 <div className="flex items-center gap-6">
@@ -830,10 +831,30 @@ const App = () => {
                                                         </div>
 
                                                         <div
-                                                            className="absolute left-12 top-1/2 -translate-y-1/2 text-[13px] font-mono font-black text-emerald-400 transition-transform duration-500"
+                                                            className="absolute left-12 top-1/2 -translate-y-1/2 text-[13px] font-mono font-black text-emerald-400 transition-transform duration-500 cursor-text z-50"
                                                             style={{ transform: `translateY(-50%) rotate(${textFlip}deg)` }}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setEditingLaneId(lane.id);
+                                                            }}
                                                         >
-                                                            {lane.volume}
+                                                            {editingLaneId === lane.id ? (
+                                                                <input
+                                                                    autoFocus
+                                                                    type="number"
+                                                                    value={lane.volume}
+                                                                    onChange={(e) => updateLane(arm.id, 'ingress', lane.id, 'volume', e.target.value)}
+                                                                    onBlur={() => setEditingLaneId(null)}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') setEditingLaneId(null);
+                                                                    }}
+                                                                    className="bg-neutral-900/80 border border-emerald-500 text-[13px] font-mono font-black text-emerald-400 outline-none px-1 rounded w-16"
+                                                                />
+                                                            ) : (
+                                                                <span className="opacity-90 hover:opacity-100 transition-opacity">
+                                                                    {lane.volume}
+                                                                </span>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 ))}
@@ -894,10 +915,30 @@ const App = () => {
                                                         }}
                                                     >
                                                         <div
-                                                            className="absolute left-12 top-1/2 -translate-y-1/2 text-[13px] font-mono font-black text-amber-500 tracking-tighter transition-transform duration-500"
+                                                            className="absolute left-12 top-1/2 -translate-y-1/2 text-[13px] font-mono font-black text-amber-500 tracking-tighter transition-transform duration-500 cursor-text z-50"
                                                             style={{ transform: `translateY(-50%) rotate(${textFlip}deg)` }}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setEditingLaneId(lane.id);
+                                                            }}
                                                         >
-                                                            {lane.volume}
+                                                            {editingLaneId === lane.id ? (
+                                                                <input
+                                                                    autoFocus
+                                                                    type="number"
+                                                                    value={lane.volume}
+                                                                    onChange={(e) => updateLane(arm.id, 'egress', lane.id, 'volume', e.target.value)}
+                                                                    onBlur={() => setEditingLaneId(null)}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') setEditingLaneId(null);
+                                                                    }}
+                                                                    className="bg-neutral-900/80 border border-amber-500 text-[13px] font-mono font-black text-amber-500 outline-none px-1 rounded w-16"
+                                                                />
+                                                            ) : (
+                                                                <span className="opacity-90 hover:opacity-100 transition-opacity">
+                                                                    {lane.volume}
+                                                                </span>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 ))}
