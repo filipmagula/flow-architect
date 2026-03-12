@@ -65,9 +65,15 @@ const SidebarLeft = ({
                                 {arm.ingressLanes.map((lane, idx) => (
                                     <div key={lane.id} className="bg-neutral-900/40 border border-white/5 p-3 rounded-lg space-y-3">
                                         <div className="flex items-center justify-between gap-3">
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-2 flex-1">
                                                 <div className="w-2 h-2 rounded-full bg-emerald-500/50" />
-                                                <span className="text-[10px] font-black text-neutral-400 uppercase">Lane {idx + 1}</span>
+                                                <input
+                                                    type="text"
+                                                    value={lane.name}
+                                                    onChange={(e) => updateLane(arm.id, 'ingress', lane.id, 'name', e.target.value)}
+                                                    className="bg-transparent border-none text-[10px] font-black text-neutral-400 uppercase focus:text-neutral-100 focus:outline-none w-full"
+                                                    placeholder="Lane Name"
+                                                />
                                             </div>
                                             <button
                                                 onClick={() => removeLane(arm.id, 'ingress', lane.id)}
@@ -111,16 +117,26 @@ const SidebarLeft = ({
 
                             <div className="space-y-2">
                                 {arm.egressLanes.map((lane, idx) => (
-                                    <div key={lane.id} className="flex items-center gap-3 bg-neutral-900/40 border border-white/5 p-3 rounded-lg">
-                                         <div className="w-1.5 h-1.5 rounded-full bg-amber-500/50" />
-                                         <span className="text-[10px] font-black text-neutral-400 uppercase whitespace-nowrap">Exit</span>
-                                         <input
-                                             type="number"
-                                             value={lane.volume}
-                                             onChange={(e) => updateLane(arm.id, 'egress', lane.id, 'volume', e.target.value)}
-                                             className="flex-1 bg-neutral-950 border border-white/10 rounded-md px-2 py-1.5 text-xs text-neutral-100 focus:border-blue-500 outline-none font-mono"
-                                             placeholder="0"
-                                         />
+                                    <div key={lane.id} className="bg-neutral-900/40 border border-white/5 p-3 rounded-lg space-y-3">
+                                         <div className="flex items-center gap-2">
+                                             <div className="w-1.5 h-1.5 rounded-full bg-amber-500/50" />
+                                             <input
+                                                 type="text"
+                                                 value={lane.name}
+                                                 onChange={(e) => updateLane(arm.id, 'egress', lane.id, 'name', e.target.value)}
+                                                 className="bg-transparent border-none text-[10px] font-black text-neutral-400 uppercase focus:text-neutral-100 focus:outline-none w-full"
+                                                 placeholder="Exit Name"
+                                             />
+                                         </div>
+                                         <div className="flex items-center gap-2">
+                                             <input
+                                                 type="number"
+                                                 value={lane.volume}
+                                                 onChange={(e) => updateLane(arm.id, 'egress', lane.id, 'volume', e.target.value)}
+                                                 className="bg-neutral-950 border border-white/10 rounded-md px-2 py-1.5 text-xs text-neutral-100 w-20 focus:border-blue-500 outline-none font-mono"
+                                                 placeholder="0"
+                                             />
+                                         </div>
                                     </div>
                                 ))}
                             </div>

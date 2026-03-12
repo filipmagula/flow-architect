@@ -9,18 +9,18 @@ export const useIntersectionState = (initialType = '4-way') => {
             angle: 0,
             label: 'North',
             ingressLanes: [
-                { id: 'i1-1', volume: 150, movements: ['S', 'R'] },
-                { id: 'i1-2', volume: 120, movements: ['L'] }
+                { id: 'i1-1', name: 'Lane 1', volume: 150, movements: ['S', 'R'] },
+                { id: 'i1-2', name: 'Lane 2', volume: 120, movements: ['L'] }
             ],
-            egressLanes: [{ id: 'e1-1', volume: 270 }]
+            egressLanes: [{ id: 'e1-1', name: 'Exit', volume: 270 }]
         },
         {
             id: 2,
             baseAngle: 90,
             angle: 0,
             label: 'East',
-            ingressLanes: [{ id: 'i2-1', volume: 300, movements: ['S'] }],
-            egressLanes: [{ id: 'e2-1', volume: 300 }]
+            ingressLanes: [{ id: 'i2-1', name: 'Lane 1', volume: 300, movements: ['S'] }],
+            egressLanes: [{ id: 'e2-1', name: 'Exit', volume: 300 }]
         },
         {
             id: 3,
@@ -28,18 +28,18 @@ export const useIntersectionState = (initialType = '4-way') => {
             angle: 0,
             label: 'South',
             ingressLanes: [
-                { id: 'i3-1', volume: 100, movements: ['S'] },
-                { id: 'i3-2', volume: 200, movements: ['R'] }
+                { id: 'i3-1', name: 'Lane 1', volume: 100, movements: ['S'] },
+                { id: 'i3-2', name: 'Lane 2', volume: 200, movements: ['R'] }
             ],
-            egressLanes: [{ id: 'e3-1', volume: 300 }]
+            egressLanes: [{ id: 'e3-1', name: 'Exit', volume: 300 }]
         },
         {
             id: 4,
             baseAngle: 270,
             angle: 0,
             label: 'West',
-            ingressLanes: [{ id: 'i4-1', volume: 150, movements: ['L', 'S', 'R'] }],
-            egressLanes: [{ id: 'e4-1', volume: 150 }]
+            ingressLanes: [{ id: 'i4-1', name: 'Lane 1', volume: 150, movements: ['L', 'S', 'R'] }],
+            egressLanes: [{ id: 'e4-1', name: 'Exit', volume: 150 }]
         },
     ]);
 
@@ -54,8 +54,8 @@ export const useIntersectionState = (initialType = '4-way') => {
                     baseAngle: 270,
                     angle: 0,
                     label: 'West',
-                    ingressLanes: [{ id: 'i4-1', volume: 150, movements: ['S'] }],
-                    egressLanes: [{ id: 'e4-1', volume: 150 }]
+                    ingressLanes: [{ id: 'i4-1', name: 'Lane 1', volume: 150, movements: ['S'] }],
+                    egressLanes: [{ id: 'e4-1', name: 'Exit', volume: 150 }]
                 }];
             });
         }
@@ -82,7 +82,8 @@ export const useIntersectionState = (initialType = '4-way') => {
             if (type === 'egress') return arm; // App does not support multiple egresses
             if (arm.ingressLanes.length >= 5) return arm; // Max 5 ingress lanes
 
-            const newLane = { id: `i${armId}-${Date.now()}`, volume: 0, movements: ['S'] };
+            const newName = `Lane ${arm.ingressLanes.length + 1}`;
+            const newLane = { id: `i${armId}-${Date.now()}`, name: newName, volume: 0, movements: ['S'] };
             return { ...arm, ingressLanes: [...arm.ingressLanes, newLane] };
         }));
     }, []);
