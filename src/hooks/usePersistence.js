@@ -1,5 +1,30 @@
 import { useCallback } from 'react';
 
+const sanitizeConfig = (config) => {
+    const sanitized = { ...config };
+
+    if (sanitized.arms) {
+        sanitized.arms = sanitized.arms.map(arm => ({
+            ...arm,
+            label: arm.label ?? '',
+            angle: arm.angle ?? 0,
+            ingressLanes: (arm.ingressLanes || []).map(lane => ({
+                ...lane,
+                name: lane.name ?? '',
+                volume: lane.volume ?? 0,
+                movements: lane.movements ?? []
+            })),
+            egressLanes: (arm.egressLanes || []).map(lane => ({
+                ...lane,
+                name: lane.name ?? '',
+                volume: lane.volume ?? 0
+            }))
+        }));
+    }
+
+    return sanitized;
+};
+
 export const usePersistence = ({
     arms,
     type,
@@ -10,11 +35,12 @@ export const usePersistence = ({
     hubWidthOffset,
     showLegend,
     legendPosition,
-    showMap,
+
     canvasBg,
     showInternalRibbons,
     useFixedRibbonWidth,
     labelHorizontalOffset,
+    canvasViewMode,
     setArms,
     setType,
     setGlobalRotation,
@@ -24,11 +50,12 @@ export const usePersistence = ({
     setHubWidthOffset,
     setShowLegend,
     setLegendPosition,
-    setShowMap,
+
     setCanvasBg,
     setShowInternalRibbons,
     setUseFixedRibbonWidth,
-    setLabelHorizontalOffset
+    setLabelHorizontalOffset,
+    setCanvasViewMode
 }) => {
     const handleExport = useCallback(() => {
         const config = {
@@ -41,11 +68,12 @@ export const usePersistence = ({
             hubWidthOffset,
             showLegend,
             legendPosition,
-            showMap,
+
             canvasBg,
             showInternalRibbons,
             useFixedRibbonWidth,
             labelHorizontalOffset,
+            canvasViewMode,
             timestamp: new Date().toISOString()
         };
         const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
@@ -59,8 +87,8 @@ export const usePersistence = ({
         URL.revokeObjectURL(url);
     }, [
         arms, type, globalRotation, hubMode, ribbonOverlap, hubOverlap,
-        hubWidthOffset, showLegend, legendPosition, showMap, canvasBg,
-        showInternalRibbons, useFixedRibbonWidth, labelHorizontalOffset
+        hubWidthOffset, showLegend, legendPosition, canvasBg,
+        showInternalRibbons, useFixedRibbonWidth, labelHorizontalOffset, canvasViewMode
     ]);
 
     const handleImport = useCallback((event) => {
@@ -70,7 +98,9 @@ export const usePersistence = ({
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
-                const config = JSON.parse(e.target.result);
+                const rawConfig = JSON.parse(e.target.result);
+                const config = sanitizeConfig(rawConfig);
+
                 if (config.arms) setArms(config.arms);
                 if (config.type !== undefined) setType(config.type);
                 if (config.globalRotation !== undefined) setGlobalRotation(config.globalRotation);
@@ -80,11 +110,12 @@ export const usePersistence = ({
                 if (config.hubWidthOffset !== undefined) setHubWidthOffset(config.hubWidthOffset);
                 if (config.showLegend !== undefined) setShowLegend(config.showLegend);
                 if (config.legendPosition !== undefined) setLegendPosition(config.legendPosition);
-                if (config.showMap !== undefined) setShowMap(config.showMap);
+
                 if (config.canvasBg !== undefined) setCanvasBg(config.canvasBg);
                 if (config.showInternalRibbons !== undefined) setShowInternalRibbons(config.showInternalRibbons);
                 if (config.useFixedRibbonWidth !== undefined) setUseFixedRibbonWidth(config.useFixedRibbonWidth);
                 if (config.labelHorizontalOffset !== undefined) setLabelHorizontalOffset(config.labelHorizontalOffset);
+                if (config.canvasViewMode !== undefined) setCanvasViewMode(config.canvasViewMode);
             } catch (err) {
                 console.error("Failed to import configuration:", err);
                 alert("Invalid configuration file.");
@@ -94,8 +125,8 @@ export const usePersistence = ({
     }, [
         setArms, setType, setGlobalRotation, setHubMode, setRibbonOverlap,
         setHubOverlap, setHubWidthOffset, setShowLegend, setLegendPosition,
-        setShowMap, setCanvasBg, setShowInternalRibbons, setUseFixedRibbonWidth,
-        setLabelHorizontalOffset
+        setCanvasBg, setShowInternalRibbons, setUseFixedRibbonWidth,
+        setLabelHorizontalOffset, setCanvasViewMode
     ]);
 
     return { handleExport, handleImport };

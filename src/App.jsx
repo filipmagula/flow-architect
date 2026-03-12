@@ -53,7 +53,7 @@ const App = () => {
         arms, type, globalRotation: ui.globalRotation, hubMode: ui.hubMode,
         ribbonOverlap: ui.ribbonOverlap, hubOverlap: ui.hubOverlap,
         hubWidthOffset: ui.hubWidthOffset, showLegend: ui.showLegend,
-        legendPosition: ui.legendPosition, showMap: ui.showMap,
+        legendPosition: ui.legendPosition,
         canvasBg: ui.canvasBg, showInternalRibbons: ui.showInternalRibbons,
         useFixedRibbonWidth: ui.useFixedRibbonWidth,
         labelHorizontalOffset: ui.labelHorizontalOffset,
@@ -61,10 +61,12 @@ const App = () => {
         setHubMode: ui.setHubMode, setRibbonOverlap: ui.setRibbonOverlap,
         setHubOverlap: ui.setHubOverlap, setHubWidthOffset: ui.setHubWidthOffset,
         setShowLegend: ui.setShowLegend, setLegendPosition: ui.setLegendPosition,
-        setShowMap: ui.setShowMap, setCanvasBg: ui.setCanvasBg,
+        setCanvasBg: ui.setCanvasBg,
         setShowInternalRibbons: ui.setShowInternalRibbons,
         setUseFixedRibbonWidth: ui.setUseFixedRibbonWidth,
-        setLabelHorizontalOffset: ui.setLabelHorizontalOffset
+        setLabelHorizontalOffset: ui.setLabelHorizontalOffset,
+        canvasViewMode: ui.canvasViewMode,
+        setCanvasViewMode: ui.setCanvasViewMode
     });
 
     const getStatusColor = useCallback(() => {
@@ -87,8 +89,7 @@ const App = () => {
                 setGlobalRotation={ui.setGlobalRotation}
                 handleExport={handleExport}
                 handleImport={handleImport}
-                showMap={ui.showMap}
-                setShowMap={ui.setShowMap}
+
                 showDebugSidebar={ui.showDebugSidebar}
                 setShowDebugSidebar={ui.setShowDebugSidebar}
             />
@@ -106,7 +107,7 @@ const App = () => {
 
                 <MainCanvas
                     mainCanvasRef={ui.mainCanvasRef}
-                    showMap={ui.showMap}
+
                     zoom={ui.zoom}
                     handleZoomIn={ui.handleZoomIn}
                     handleZoomOut={ui.handleZoomOut}
@@ -139,8 +140,9 @@ const App = () => {
                     getStatusColor={getStatusColor}
                     totalIngress={totalIngress}
                     totalEgress={totalEgress}
+                    canvasViewMode={ui.canvasViewMode}
                 />
-
+ 
                 <SidebarRight
                     showDebugSidebar={ui.showDebugSidebar}
                     hubMode={ui.hubMode}
@@ -167,6 +169,8 @@ const App = () => {
                     setLabelHorizontalOffset={ui.setLabelHorizontalOffset}
                     canvasBg={ui.canvasBg}
                     setCanvasBg={ui.setCanvasBg}
+                    canvasViewMode={ui.canvasViewMode}
+                    setCanvasViewMode={ui.setCanvasViewMode}
                 />
             </div>
         </div>

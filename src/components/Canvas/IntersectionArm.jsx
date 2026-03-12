@@ -16,7 +16,8 @@ const IntersectionArm = ({
     editingArmId,
     setEditingArmId,
     updateLane,
-    updateArm
+    updateArm,
+    canvasViewMode
 }) => {
     const totalArmAngle = arm.baseAngle + arm.angle;
     const textFlip = getReadableFlip(totalArmAngle, globalRotation);
@@ -42,11 +43,45 @@ const IntersectionArm = ({
                             style={{ height: `${laneHeight}px` }}
                         >
                             <div className="absolute left-0 h-full w-1 bg-white shadow-[0_0_8px_white]" />
-                            <div className="absolute left-[96px] top-1/2 -translate-y-1/2 flex flex-row gap-6">
-                                {lane.movements.includes('S') && <ArrowUp size={32} className="text-emerald-400 opacity-90 -rotate-90" />}
-                                {lane.movements.includes('L') && <ArrowUpLeft size={32} className="text-emerald-400 opacity-90 -rotate-90" />}
-                                {lane.movements.includes('R') && <ArrowUpRight size={32} className="text-emerald-400 opacity-90 -rotate-90" />}
-                            </div>
+                            {canvasViewMode === 'arrows' ? (
+                                <div className="absolute left-[96px] top-1/2 -translate-y-1/2 flex flex-row gap-6">
+                                    {lane.movements.includes('S') && <ArrowUp size={32} className="text-emerald-400 opacity-90 -rotate-90" />}
+                                    {lane.movements.includes('L') && <ArrowUpLeft size={32} className="text-emerald-400 opacity-90 -rotate-90" />}
+                                    {lane.movements.includes('R') && <ArrowUpRight size={32} className="text-emerald-400 opacity-90 -rotate-90" />}
+                                </div>
+                            ) : (
+                                <div
+                                    className="absolute z-50 transition-all duration-500 cursor-text flex items-center whitespace-nowrap"
+                                    style={{
+                                        left: `${labelHorizontalOffset}px`,
+                                        top: '50%',
+                                        transform: `translateY(-50%) rotate(${textFlip}deg)`
+                                    }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingLaneId(`${lane.id}-name`);
+                                    }}
+                                >
+                                    {editingLaneId === `${lane.id}-name` ? (
+                                        <input
+                                            autoFocus
+                                            type="text"
+                                            value={lane.name}
+                                            onChange={(e) => updateLane(arm.id, 'ingress', lane.id, 'name', e.target.value)}
+                                            onBlur={() => setEditingLaneId(null)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') setEditingLaneId(null);
+                                            }}
+                                            className="bg-neutral-900/80 border border-emerald-500 text-sm font-black tracking-[0.3em] text-white uppercase outline-none px-2 py-1 rounded"
+                                            style={{ minWidth: (lane.name?.length || 4) * 1.5 + 'ch' }}
+                                        />
+                                    ) : (
+                                        <span className="text-sm font-black tracking-[0.3em] text-white uppercase opacity-90 hover:opacity-100 transition-opacity">
+                                            {lane.name || 'Lane'}
+                                        </span>
+                                    )}
+                                </div>
+                            )}
                             <div
                                 className="absolute left-12 top-1/2 -translate-y-1/2 text-[13px] font-mono font-black text-emerald-400 transition-transform duration-500 cursor-text z-50"
                                 style={{ transform: `translateY(-50%) rotate(${textFlip}deg)` }}
@@ -90,37 +125,39 @@ const IntersectionArm = ({
 
                 {/* Egress Section */}
                 <div className="absolute top-[0px] w-full flex flex-col items-start" style={{ paddingTop: `${medianPadding + medianHeight / 2}px`, gap: `${laneGap}px` }}>
-                    <div
-                        className="absolute whitespace-nowrap z-50 transition-all duration-500 cursor-text flex items-center"
-                        style={{
-                            left: `${labelHorizontalOffset}px`,
-                            top: `${medianPadding + medianHeight / 2 + laneHeight / 2}px`,
-                            transform: `translateY(-50%) rotate(${textFlip}deg)`
-                        }}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingArmId(arm.id);
-                        }}
-                    >
-                        {editingArmId === arm.id ? (
-                            <input
-                                autoFocus
-                                type="text"
-                                value={arm.label}
-                                onChange={(e) => updateArm(arm.id, { label: e.target.value })}
-                                onBlur={() => setEditingArmId(null)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') setEditingArmId(null);
-                                }}
-                                className="bg-neutral-900/80 border border-blue-500 text-sm font-black tracking-[0.3em] text-white uppercase outline-none px-2 py-1 rounded"
-                                style={{ minWidth: (arm.label.length || 1) * 1.5 + 'ch' }}
-                            />
-                        ) : (
-                            <span className="text-sm font-black tracking-[0.3em] text-white uppercase opacity-90 hover:opacity-100 transition-opacity">
-                                {arm.label || 'Unnamed'}
-                            </span>
-                        )}
-                    </div>
+                    {canvasViewMode === 'arrows' && (
+                        <div
+                            className="absolute whitespace-nowrap z-50 transition-all duration-500 cursor-text flex items-center"
+                            style={{
+                                left: `${labelHorizontalOffset}px`,
+                                top: `${medianPadding + medianHeight / 2 + laneHeight / 2}px`,
+                                transform: `translateY(-50%) rotate(${textFlip}deg)`
+                            }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingArmId(arm.id);
+                            }}
+                        >
+                            {editingArmId === arm.id ? (
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    value={arm.label}
+                                    onChange={(e) => updateArm(arm.id, { label: e.target.value })}
+                                    onBlur={() => setEditingArmId(null)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') setEditingArmId(null);
+                                    }}
+                                    className="bg-neutral-900/80 border border-blue-500 text-sm font-black tracking-[0.3em] text-white uppercase outline-none px-2 py-1 rounded"
+                                    style={{ minWidth: (arm.label.length || 1) * 1.5 + 'ch' }}
+                                />
+                            ) : (
+                                <span className="text-sm font-black tracking-[0.3em] text-white uppercase opacity-90 hover:opacity-100 transition-opacity">
+                                    {arm.label || 'Unnamed'}
+                                </span>
+                            )}
+                        </div>
+                    )}
 
                     {arm.egressLanes.map((lane, idx) => (
                         <div
@@ -128,6 +165,39 @@ const IntersectionArm = ({
                             className="w-full bg-gradient-to-r from-amber-950/80 to-transparent relative border-l-[6px] border-amber-600/70"
                             style={{ height: `${laneHeight}px` }}
                         >
+                            {canvasViewMode === 'zones' && (
+                                <div
+                                    className="absolute z-50 transition-all duration-500 cursor-text flex items-center whitespace-nowrap"
+                                    style={{
+                                        left: `${labelHorizontalOffset}px`,
+                                        top: '50%',
+                                        transform: `translateY(-50%) rotate(${textFlip}deg)`
+                                    }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingLaneId(`${lane.id}-name`);
+                                    }}
+                                >
+                                    {editingLaneId === `${lane.id}-name` ? (
+                                        <input
+                                            autoFocus
+                                            type="text"
+                                            value={lane.name}
+                                            onChange={(e) => updateLane(arm.id, 'egress', lane.id, 'name', e.target.value)}
+                                            onBlur={() => setEditingLaneId(null)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') setEditingLaneId(null);
+                                            }}
+                                            className="bg-neutral-900/80 border border-amber-500 text-sm font-black tracking-[0.3em] text-white uppercase outline-none px-2 py-1 rounded"
+                                            style={{ minWidth: (lane.name?.length || 4) * 1.5 + 'ch' }}
+                                        />
+                                    ) : (
+                                        <span className="text-sm font-black tracking-[0.3em] text-white uppercase opacity-90 hover:opacity-100 transition-opacity">
+                                            {lane.name || 'Exit'}
+                                        </span>
+                                    )}
+                                </div>
+                            )}
                             <div
                                 className="absolute left-12 top-1/2 -translate-y-1/2 text-[13px] font-mono font-black text-amber-500 tracking-tighter transition-transform duration-500 cursor-text z-50"
                                 style={{ transform: `translateY(-50%) rotate(${textFlip}deg)` }}

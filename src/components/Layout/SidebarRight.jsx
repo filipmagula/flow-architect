@@ -28,7 +28,9 @@ const SidebarRight = ({
     labelHorizontalOffset,
     setLabelHorizontalOffset,
     canvasBg,
-    setCanvasBg
+    setCanvasBg,
+    canvasViewMode,
+    setCanvasViewMode
 }) => {
     return (
         <aside
@@ -45,6 +47,24 @@ const SidebarRight = ({
                     <h3 className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                         <Eye size={12} /> Visibility
                     </h3>
+
+                    <div className="space-y-3 mb-4">
+                        <span className="text-xs text-neutral-300">View Mode</span>
+                        <div className="grid grid-cols-2 gap-1 bg-black/40 p-1 rounded-lg border border-white/5">
+                            {[
+                                { id: 'arrows', label: 'ARROWS & STREETS' },
+                                { id: 'zones', label: 'DETECTOR ZONES' }
+                            ].map((m) => (
+                                <button
+                                    key={m.id}
+                                    onClick={() => setCanvasViewMode(m.id)}
+                                    className={`py-1.5 text-[8px] font-black tracking-widest rounded transition-all ${canvasViewMode === m.id ? 'bg-blue-600 text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
+                                >
+                                    {m.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
 
                     <div className="space-y-3">
                         <span className="text-xs text-neutral-300">Hub Geometry</span>

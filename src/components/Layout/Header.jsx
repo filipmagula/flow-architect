@@ -18,8 +18,6 @@ const Header = ({
     setGlobalRotation,
     handleExport,
     handleImport,
-    showMap,
-    setShowMap,
     showDebugSidebar,
     setShowDebugSidebar
 }) => {
@@ -54,7 +52,7 @@ const Header = ({
                 <div className="flex gap-2">
                     <button
                         onClick={handleExport}
-                        className="p-1.5 bg-neutral-800 border border-neutral-700 rounded-lg text-neutral-400 hover:bg-neutral-700 hover:text-white transition-all flex items-center gap-2"
+                        className="p-1.5 h-8 bg-neutral-800 border border-neutral-700 rounded-lg text-neutral-400 hover:bg-neutral-700 hover:text-white transition-all flex items-center gap-2"
                         title="Export Configuration"
                     >
                         <Download size={14} />
@@ -70,19 +68,14 @@ const Header = ({
                         />
                         <label
                             htmlFor="import-config"
-                            className="p-1.5 bg-neutral-800 border border-neutral-700 rounded-lg text-neutral-400 hover:bg-neutral-700 hover:text-white transition-all flex items-center gap-2 cursor-pointer"
+                            className="p-1.5 h-8 bg-neutral-800 border border-neutral-700 rounded-lg text-neutral-400 hover:bg-neutral-700 hover:text-white transition-all flex items-center gap-2 cursor-pointer"
                             title="Import Configuration"
                         >
                             <Upload size={14} />
                             <span className="hidden xl:inline text-[8px] font-black uppercase tracking-widest">Import</span>
                         </label>
                     </div>
-                    <button
-                        onClick={() => setShowMap(!showMap)}
-                        className={`px-3 py-1.5 rounded-full flex items-center gap-2 text-[9px] font-black tracking-widest transition-all border ${showMap ? 'bg-blue-600 border-blue-500 text-white' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
-                    >
-                        <MapIcon size={12} /> {showMap ? 'SATELLITE' : 'SCHEMATIC'}
-                    </button>
+
                     <button
                         onClick={() => setShowDebugSidebar(!showDebugSidebar)}
                         className={`p-1.5 rounded-lg transition-colors border ${showDebugSidebar ? 'bg-amber-600/20 border-amber-500 text-amber-400' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}

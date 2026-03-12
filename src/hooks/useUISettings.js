@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
 export const useUISettings = () => {
-    const [showMap, setShowMap] = useState(true);
+
     const [showSidebar, setShowSidebar] = useState(false);
     const [showDebugSidebar, setShowDebugSidebar] = useState(false);
     const [showFlowPanel, setShowFlowPanel] = useState(true);
@@ -20,6 +20,7 @@ export const useUISettings = () => {
     const [hubWidthOffset, setHubWidthOffset] = useState(35);
     const [canvasBg, setCanvasBg] = useState('bg-[#1e293b]');
     const [labelHorizontalOffset, setLabelHorizontalOffset] = useState(111);
+    const [canvasViewMode, setCanvasViewMode] = useState('arrows'); // 'arrows' | 'zones'
 
     const mainCanvasRef = useRef(null);
 
@@ -84,7 +85,7 @@ export const useUISettings = () => {
     }, []);
 
     return {
-        showMap, setShowMap,
+
         showSidebar, setShowSidebar,
         showDebugSidebar, setShowDebugSidebar,
         showFlowPanel, setShowFlowPanel,
@@ -103,6 +104,7 @@ export const useUISettings = () => {
         hubWidthOffset, setHubWidthOffset,
         canvasBg, setCanvasBg,
         labelHorizontalOffset, setLabelHorizontalOffset,
+        canvasViewMode, setCanvasViewMode,
         mainCanvasRef,
         handleZoomIn, handleZoomOut, handleAutoFit
     };

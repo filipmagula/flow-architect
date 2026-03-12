@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigation } from 'lucide-react';
+
 
 const JunctionHub = ({
     hubSize,
@@ -61,9 +61,7 @@ const JunctionHub = ({
                 </svg>
             )}
 
-            <div className={`absolute inset-0 border border-white/[0.04] rounded-[2rem] pointer-events-none flex items-center justify-center ${hubMode === 0 && 'hidden'}`}>
-                <Navigation size={hubSize / 6} className="text-neutral-100 opacity-5 rotate-45" />
-            </div>
+
             
         </>
     );

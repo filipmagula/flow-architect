@@ -9,7 +9,7 @@ import { BRANCH_COLORS } from '../../constants';
 const MainCanvas = (props) => {
     const {
         mainCanvasRef,
-        showMap,
+
         zoom,
         handleZoomIn,
         handleZoomOut,
@@ -41,7 +41,8 @@ const MainCanvas = (props) => {
         delta,
         getStatusColor,
         totalIngress,
-        totalEgress
+        totalEgress,
+        canvasViewMode
     } = props;
 
     return (
@@ -54,23 +55,23 @@ const MainCanvas = (props) => {
                     zoom={zoom}
                 />
 
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+                    <div className="absolute inset-0" style={{
+                        backgroundImage: `linear-gradient(rgba(255,255,255,1) 1.5px, transparent 1.5px), linear-gradient(90deg, rgba(255,255,255,1) 1.5px, transparent 1.5px)`,
+                        backgroundSize: `${200 * zoom}px ${200 * zoom}px`,
+                        backgroundPosition: 'center'
+                    }} />
+                    <div className="absolute inset-0" style={{
+                        backgroundImage: `linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px)`,
+                        backgroundSize: `${40 * zoom}px ${40 * zoom}px`,
+                        backgroundPosition: 'center'
+                    }} />
+                </div>
+
                 <div
                     className="relative flex items-center justify-center transition-transform duration-300 ease-out"
                     style={{ transform: `scale(${zoom})` }}
                 >
-                    {showMap && (
-                        <div className="absolute inset-0 opacity-[0.04] pointer-events-none">
-                            <div className="absolute inset-0" style={{
-                                backgroundImage: `linear-gradient(rgba(255,255,255,1) 2.5px, transparent 2.5px), linear-gradient(90deg, rgba(255,255,255,1) 2.5px, transparent 2.5px)`,
-                                backgroundSize: '240px 240px'
-                            }} />
-                            <div className="absolute inset-0" style={{
-                                backgroundImage: `linear-gradient(rgba(255,255,255,.5) 1.5px, transparent 1.5px), linear-gradient(90deg, rgba(255,255,255,.5) 1.5px, transparent 1.5px)`,
-                                backgroundSize: '60px 60px'
-                            }} />
-                        </div>
-                    )}
-
                     <div
                         className="relative z-30 transition-all duration-500 ease-in-out flex items-center justify-center overflow-visible"
                         style={{
@@ -106,6 +107,7 @@ const MainCanvas = (props) => {
                                 setEditingArmId={setEditingArmId}
                                 updateLane={updateLane}
                                 updateArm={updateArm}
+                                canvasViewMode={canvasViewMode}
                             />
                         ))}
                     </div>
