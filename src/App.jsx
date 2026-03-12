@@ -36,8 +36,10 @@ const BRANCH_COLORS = {
 const App = () => {
     const [type, setType] = useState('4-way');
     const [showMap, setShowMap] = useState(true);
-    const [showSidebar, setShowSidebar] = useState(true);
+    const [showSidebar, setShowSidebar] = useState(false);
     const [showDebugSidebar, setShowDebugSidebar] = useState(false);
+    const [showFlowPanel, setShowFlowPanel] = useState(true);
+    const [flowPanelPosition, setFlowPanelPosition] = useState('bottom-right');
     const [globalRotation, setGlobalRotation] = useState(0);
     const [editingArmId, setEditingArmId] = useState(null);
     const [arms, setArms] = useState([
@@ -508,41 +510,41 @@ const App = () => {
     return (
         <div className={`flex flex-col h-screen ${canvasBg} text-neutral-100 font-sans overflow-hidden transition-colors duration-500`}>
             {/* Header */}
-            <header className="px-6 py-4 bg-neutral-900 border-b border-white/5 flex justify-between items-center z-50 shadow-lg shrink-0">
+            <header className="px-6 py-2 bg-neutral-900 border-b border-white/5 flex justify-between items-center z-50 shadow-lg shrink-0">
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => setShowSidebar(!showSidebar)}
-                        className="p-2 hover:bg-white/10 rounded-lg transition-colors text-neutral-400 mr-1"
+                        className="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-neutral-400 mr-1"
                         title={showSidebar ? "Hide Controls" : "Show Controls"}
                     >
-                        {showSidebar ? <PanelLeftClose size={20} /> : <PanelLeftOpen size={20} />}
+                        {showSidebar ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
                     </button>
-                    <div className="bg-blue-600 p-1.5 rounded-lg shadow-[0_0_20px_rgba(37,99,235,0.4)]">
-                        <Activity size={20} className="text-white" />
+                    <div className="bg-blue-600 p-1 rounded-lg shadow-[0_0_15px_rgba(37,99,235,0.4)]">
+                        <Activity size={16} className="text-white" />
                     </div>
-                    <h1 className="text-xl font-bold tracking-tight italic">FlowArchitect <span className="text-neutral-500 font-medium">v3.5.1</span></h1>
+                    <h1 className="text-lg font-bold tracking-tight italic">FlowArchitect <span className="text-neutral-500 font-medium text-xs">v3.5.1</span></h1>
                 </div>
 
                 <div className="flex items-center gap-6">
-                    <div className="hidden lg:flex items-center gap-3 bg-neutral-800/50 px-4 py-2 rounded-full border border-white/5">
-                        <RotateCw size={14} className="text-neutral-500" />
-                        <span className="text-[10px] font-black tracking-widest text-neutral-400 uppercase w-20">Global Spin</span>
+                    <div className="hidden lg:flex items-center gap-2 bg-neutral-800/50 px-3 py-1 rounded-full border border-white/5">
+                        <RotateCw size={12} className="text-neutral-500" />
+                        <span className="text-[9px] font-black tracking-widest text-neutral-400 uppercase w-16">Spin</span>
                         <input
                             type="range" min="-90" max="90" value={globalRotation}
                             onChange={(e) => setGlobalRotation(parseInt(e.target.value))}
-                            className="w-32 h-1 bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                            className="w-24 h-1 bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
                         />
-                        <span className="text-[10px] font-mono text-blue-400 w-8 text-right">{globalRotation}°</span>
+                        <span className="text-[9px] font-mono text-blue-400 w-6 text-right">{globalRotation}°</span>
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="flex gap-2">
                         <button
                             onClick={handleExport}
-                            className="p-2 bg-neutral-800 border border-neutral-700 rounded-lg text-neutral-400 hover:bg-neutral-700 hover:text-white transition-all flex items-center gap-2"
+                            className="p-1.5 bg-neutral-800 border border-neutral-700 rounded-lg text-neutral-400 hover:bg-neutral-700 hover:text-white transition-all flex items-center gap-2"
                             title="Export Configuration"
                         >
-                            <Download size={16} />
-                            <span className="hidden xl:inline text-[9px] font-black uppercase tracking-widest">Export</span>
+                            <Download size={14} />
+                            <span className="hidden xl:inline text-[8px] font-black uppercase tracking-widest">Export</span>
                         </button>
                         <div className="relative">
                             <input
@@ -554,72 +556,38 @@ const App = () => {
                             />
                             <label
                                 htmlFor="import-config"
-                                className="p-2 bg-neutral-800 border border-neutral-700 rounded-lg text-neutral-400 hover:bg-neutral-700 hover:text-white transition-all flex items-center gap-2 cursor-pointer"
+                                className="p-1.5 bg-neutral-800 border border-neutral-700 rounded-lg text-neutral-400 hover:bg-neutral-700 hover:text-white transition-all flex items-center gap-2 cursor-pointer"
                                 title="Import Configuration"
                             >
-                                <Upload size={16} />
-                                <span className="hidden xl:inline text-[9px] font-black uppercase tracking-widest">Import</span>
+                                <Upload size={14} />
+                                <span className="hidden xl:inline text-[8px] font-black uppercase tracking-widest">Import</span>
                             </label>
                         </div>
                         <button
                             onClick={() => setShowMap(!showMap)}
-                            className={`px-4 py-2 rounded-full flex items-center gap-2 text-[10px] font-black tracking-widest transition-all border ${showMap ? 'bg-blue-600 border-blue-500 text-white' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
+                            className={`px-3 py-1.5 rounded-full flex items-center gap-2 text-[9px] font-black tracking-widest transition-all border ${showMap ? 'bg-blue-600 border-blue-500 text-white' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
                         >
                             <MapIcon size={12} /> {showMap ? 'SATELLITE' : 'SCHEMATIC'}
                         </button>
                         <button
                             onClick={() => setShowDebugSidebar(!showDebugSidebar)}
-                            className={`p-2 rounded-lg transition-colors border ${showDebugSidebar ? 'bg-amber-600/20 border-amber-500 text-amber-400' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
+                            className={`p-1.5 rounded-lg transition-colors border ${showDebugSidebar ? 'bg-amber-600/20 border-amber-500 text-amber-400' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:bg-neutral-700'}`}
                             title="View Settings"
                         >
-                            {showDebugSidebar ? <PanelRightClose size={20} /> : <PanelRightOpen size={20} />}
+                            {showDebugSidebar ? <PanelRightClose size={18} /> : <PanelRightOpen size={18} />}
                         </button>
                     </div>
                 </div>
             </header>
 
             <div className="flex flex-1 overflow-hidden relative">
-                {/* LEFT SIDEBAR: Branch Configuration */}
                 <aside
-                    className={`absolute left-0 top-0 h-full z-40 bg-neutral-900 border-r border-white/5 overflow-y-auto shrink-0 custom-scrollbar transition-all duration-300 ease-in-out shadow-2xl ${showSidebar ? 'w-[440px] p-6 opacity-100' : 'w-0 p-0 opacity-0 pointer-events-none'
+                    className={`absolute left-0 top-0 h-full z-40 bg-neutral-900 border-r border-white/5 overflow-y-auto shrink-0 custom-scrollbar transition-all duration-300 ease-in-out shadow-2xl ${showSidebar ? 'w-[400px] p-4 opacity-100' : 'w-0 p-0 opacity-0 pointer-events-none'
                         }`}
                 >
-                    <section className="bg-black/40 border border-white/10 rounded-2xl p-6 shadow-2xl space-y-6">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <h3 className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.2em]">Conservation of Flow</h3>
-                                <div className={`text-5xl font-mono font-bold mt-1 tracking-tighter ${getStatusColor()}`}>
-                                    {delta > 0 ? `+${delta}` : delta}
-                                </div>
-                            </div>
-                            <div className={`p-2 rounded-full bg-neutral-900 border border-white/5 ${getStatusColor()}`}>
-                                {Math.abs(delta) === 0 ? <CheckCircle2 size={32} /> : <AlertTriangle size={32} />}
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-emerald-500/5 p-4 rounded-xl border border-emerald-500/10">
-                                    <span className="text-[8px] font-black text-emerald-500/60 uppercase">Incoming (Total)</span>
-                                    <div className="text-2xl font-mono text-emerald-400 font-bold tracking-tight">{totalIngress}</div>
-                                </div>
-                                <div className="bg-amber-500/5 p-4 rounded-xl border border-amber-500/10">
-                                    <span className="text-[8px] font-black text-amber-500/60 uppercase">Outgoing (Total)</span>
-                                    <div className="text-2xl font-mono text-amber-400 font-bold tracking-tight">{totalEgress}</div>
-                                </div>
-                            </div>
-                            <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
-                                <div
-                                    className={`h-full transition-all duration-1000 ease-out ${Math.abs(delta) === 0 ? 'bg-emerald-500 shadow-[0_0_15px_#10b981]' : 'bg-blue-500'}`}
-                                    style={{ width: `${Math.min(100, (totalEgress / totalIngress) * 100 || 0)}%` }}
-                                />
-                            </div>
-                        </div>
-                    </section>
-
-                    <div className="flex items-center gap-2 text-neutral-500 pt-4 px-2">
+                    <div className="flex items-center gap-2 text-neutral-400 mb-6 px-2">
                         <Settings size={14} />
-                        <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">Branch Parameters</h2>
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">Branch Configuration</h2>
                     </div>
 
                     <div className="space-y-12 pb-24">
@@ -944,36 +912,97 @@ const App = () => {
                     </div>
                 </div>
 
-                    {/* FLOATING LEGEND */}
-                    {showLegend && (
-                        <div 
-                            className={`absolute z-30 flex flex-col gap-3 p-4 transition-all duration-500`}
-                            style={{
-                                top: legendPosition.startsWith('top') ? '2rem' : 'auto',
-                                bottom: legendPosition.startsWith('bottom') ? '2rem' : 'auto',
-                                left: legendPosition.endsWith('left') ? '2rem' : 'auto',
-                                right: legendPosition.endsWith('right') ? '2rem' : 'auto',
-                            }}
-                        >
-                            {arms.map(arm => (
-                                <div key={arm.id} className="flex items-center gap-3 bg-black/20 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-white/5">
-                                    <div className="w-3 h-3 rounded shadow-[0_0_10px_currentColor]" style={{
-                                        color: BRANCH_COLORS[arm.baseAngle] || '#94a3b8',
-                                        backgroundColor: 'currentColor'
-                                    }} />
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest whitespace-nowrap">To {arm.label}</span>
+                    {/* FLOATING LEGEND & FLOW PANEL */}
+                    <div 
+                        className={`absolute z-30 flex gap-4 p-6 transition-all duration-500 overflow-visible`}
+                        style={{
+                            flexDirection: (legendPosition.endsWith('right') && flowPanelPosition.endsWith('right')) || (legendPosition.endsWith('left') && flowPanelPosition.endsWith('left')) ? 'row' : 'column',
+                            alignItems: (legendPosition.endsWith('right') && flowPanelPosition.endsWith('right')) ? 'flex-end' : (legendPosition.endsWith('left') && flowPanelPosition.endsWith('left') ? 'flex-start' : 'stretch'),
+                            top: legendPosition.startsWith('top') || flowPanelPosition.startsWith('top') ? '1.5rem' : 'auto',
+                            bottom: legendPosition.startsWith('bottom') || flowPanelPosition.startsWith('bottom') ? '1.5rem' : 'auto',
+                            left: legendPosition.endsWith('left') || flowPanelPosition.endsWith('left') ? '1.5rem' : 'auto',
+                            right: legendPosition.endsWith('right') || flowPanelPosition.endsWith('right') ? '1.5rem' : 'auto',
+                            pointerEvents: 'none'
+                        }}
+                    >
+                        {/* Legend */}
+                        {showLegend && (
+                            <div 
+                                className={`flex flex-col gap-2 p-3 bg-black/40 backdrop-blur-md border border-white/5 rounded-xl shadow-2xl pointer-events-auto transition-all`}
+                                style={{
+                                    order: legendPosition === flowPanelPosition ? 2 : 0,
+                                    position: legendPosition === flowPanelPosition ? 'relative' : 'absolute',
+                                    top: legendPosition === flowPanelPosition ? 'auto' : (legendPosition.startsWith('top') ? '0' : 'auto'),
+                                    bottom: legendPosition === flowPanelPosition ? 'auto' : (legendPosition.startsWith('bottom') ? '0' : 'auto'),
+                                    left: legendPosition === flowPanelPosition ? 'auto' : (legendPosition.endsWith('left') ? '0' : 'auto'),
+                                    right: legendPosition === flowPanelPosition ? 'auto' : (legendPosition.endsWith('right') ? '0' : 'auto'),
+                                }}
+                            >
+                                <h4 className="text-[8px] font-black text-neutral-500 uppercase tracking-widest mb-1">Destinations</h4>
+                                {arms.map(arm => (
+                                    <div key={arm.id} className="flex items-center gap-2">
+                                        <div className="w-2.5 h-2.5 rounded shadow-[0_0_8px_currentColor]" style={{
+                                            color: BRANCH_COLORS[arm.baseAngle] || '#94a3b8',
+                                            backgroundColor: 'currentColor'
+                                        }} />
+                                        <span className="text-[9px] font-bold text-white uppercase tracking-wider whitespace-nowrap">To {arm.label}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Flow Panel Overlay */}
+                        {showFlowPanel && (
+                            <div 
+                                className={`p-4 bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] pointer-events-auto transition-all w-64`}
+                                style={{
+                                    order: legendPosition === flowPanelPosition ? 1 : 0,
+                                    position: legendPosition === flowPanelPosition ? 'relative' : 'absolute',
+                                    top: legendPosition === flowPanelPosition ? 'auto' : (flowPanelPosition.startsWith('top') ? '0' : 'auto'),
+                                    bottom: legendPosition === flowPanelPosition ? 'auto' : (flowPanelPosition.startsWith('bottom') ? '0' : 'auto'),
+                                    left: legendPosition === flowPanelPosition ? 'auto' : (flowPanelPosition.endsWith('left') ? '0' : 'auto'),
+                                    right: legendPosition === flowPanelPosition ? 'auto' : (flowPanelPosition.endsWith('right') ? '0' : 'auto'),
+                                }}
+                            >
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 className="text-[8px] font-black text-neutral-500 uppercase tracking-widest">Conservation of Flow</h3>
+                                        <div className={`text-3xl font-mono font-bold mt-0.5 tracking-tighter ${getStatusColor()}`}>
+                                            {delta > 0 ? `+${delta}` : delta}
+                                        </div>
+                                    </div>
+                                    <div className={`${getStatusColor()}`}>
+                                        {Math.abs(delta) === 0 ? <CheckCircle2 size={24} /> : <AlertTriangle size={24} />}
+                                    </div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                                <div className="space-y-3">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="bg-white/5 p-2 rounded-lg border border-white/5">
+                                            <span className="text-[7px] font-black text-neutral-500 uppercase block mb-1">Inbound</span>
+                                            <div className="text-sm font-mono text-emerald-400 font-bold">{totalIngress}</div>
+                                        </div>
+                                        <div className="bg-white/5 p-2 rounded-lg border border-white/5">
+                                            <span className="text-[7px] font-black text-neutral-500 uppercase block mb-1">Outbound</span>
+                                            <div className="text-sm font-mono text-amber-400 font-bold">{totalEgress}</div>
+                                        </div>
+                                    </div>
+                                    <div className="h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+                                        <div
+                                            className={`h-full transition-all duration-1000 ease-out ${Math.abs(delta) === 0 ? 'bg-emerald-500' : 'bg-blue-500'}`}
+                                            style={{ width: `${Math.min(100, (totalEgress / totalIngress) * 100 || 0)}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </main>
 
-                {/* RIGHT SIDEBAR: Debug & Rendering Options */}
                 <aside
-                    className={`absolute right-0 top-0 h-full z-40 bg-neutral-900 border-l border-white/5 overflow-y-auto shrink-0 custom-scrollbar transition-all duration-300 ease-in-out shadow-2xl ${showDebugSidebar ? 'w-[320px] p-6 opacity-100' : 'w-0 p-0 opacity-0 pointer-events-none'
+                    className={`absolute right-0 top-0 h-full z-40 bg-neutral-900 border-l border-white/5 overflow-y-auto shrink-0 custom-scrollbar transition-all duration-300 ease-in-out shadow-2xl ${showDebugSidebar ? 'w-[320px] p-4 opacity-100' : 'w-0 p-0 opacity-0 pointer-events-none'
                         }`}
                 >
-                    <div className="flex items-center gap-2 text-neutral-400 mb-8 px-2">
+                    <div className="flex items-center gap-2 text-neutral-400 mb-6 px-2">
                         <Layers size={14} />
                         <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">Debug & Rendering</h2>
                     </div>
@@ -1046,19 +1075,19 @@ const App = () => {
                             </div>
 
                             {showLegend && (
-                                <div className="space-y-3 pt-2">
-                                    <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Legend Position</span>
-                                    <div className="grid grid-cols-2 gap-2">
+                                <div className="space-y-2 pt-2 border-t border-white/5">
+                                    <span className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Legend Position</span>
+                                    <div className="grid grid-cols-4 gap-1">
                                         {[
-                                            { id: 'top-left', label: 'Top Left' },
-                                            { id: 'top-right', label: 'Top Right' },
-                                            { id: 'bottom-left', label: 'Bottom Left' },
-                                            { id: 'bottom-right', label: 'Bottom Right' }
+                                            { id: 'top-left', label: 'TL' },
+                                            { id: 'top-right', label: 'TR' },
+                                            { id: 'bottom-left', label: 'BL' },
+                                            { id: 'bottom-right', label: 'BR' }
                                         ].map((pos) => (
                                             <button
                                                 key={pos.id}
                                                 onClick={() => setLegendPosition(pos.id)}
-                                                className={`py-2 text-[8px] font-black tracking-widest rounded border transition-all ${legendPosition === pos.id ? 'bg-blue-600 border-blue-500 text-white' : 'border-white/5 text-neutral-500 hover:text-neutral-300'}`}
+                                                className={`py-1.5 text-[8px] font-black tracking-widest rounded transition-all border ${legendPosition === pos.id ? 'bg-blue-600 border-blue-500 text-white' : 'border-white/5 text-neutral-500 hover:text-neutral-300'}`}
                                             >
                                                 {pos.label}
                                             </button>
@@ -1066,6 +1095,39 @@ const App = () => {
                                     </div>
                                 </div>
                             )}
+
+                            <div className="pt-4 border-t border-white/5 space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs text-neutral-300">Flow Panel</span>
+                                    <button
+                                        onClick={() => setShowFlowPanel(!showFlowPanel)}
+                                        className={`w-10 h-5 rounded-full relative transition-colors ${showFlowPanel ? 'bg-blue-600' : 'bg-neutral-700'}`}
+                                    >
+                                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${showFlowPanel ? 'left-6' : 'left-1'}`} />
+                                    </button>
+                                </div>
+                                {showFlowPanel && (
+                                    <div className="space-y-2">
+                                        <span className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Position</span>
+                                        <div className="grid grid-cols-4 gap-1">
+                                            {[
+                                                { id: 'top-left', label: 'TL' },
+                                                { id: 'top-right', label: 'TR' },
+                                                { id: 'bottom-left', label: 'BL' },
+                                                { id: 'bottom-right', label: 'BR' }
+                                            ].map((pos) => (
+                                                <button
+                                                    key={pos.id}
+                                                    onClick={() => setFlowPanelPosition(pos.id)}
+                                                    className={`py-1.5 text-[8px] font-black tracking-widest rounded transition-all border ${flowPanelPosition === pos.id ? 'bg-blue-600 border-blue-500 text-white' : 'border-white/5 text-neutral-500 hover:text-neutral-300'}`}
+                                                >
+                                                    {pos.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         <div className="bg-black/40 border border-white/5 rounded-xl p-4 space-y-4">
